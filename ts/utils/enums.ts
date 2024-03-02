@@ -15,3 +15,10 @@ export enum BrickStatus {
   BREAKING,
   BROKEN,
 }
+
+export enum EventType {
+  GIANT_PADDLE_ACTIVATED,
+  PLUS_BALL,
+  FIREBALL,
+  SHIELD,
+}
