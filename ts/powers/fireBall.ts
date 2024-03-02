@@ -1,8 +1,8 @@
-import { Ball } from "../models/ball.js";
+import { EventType } from "../utils/enums.js";
 import { Power } from "./power.js";
 
-export class FireBall extends Power<Ball[]> {
-  effect(balls: Ball[]): void {
-    balls.forEach((ball) => (ball.fire = true));
+export class FireBall extends Power {
+  effect(): EventType {
+    return EventType.FIREBALL;
   }
 }

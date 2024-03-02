@@ -1,6 +1,7 @@
-import { Powerable } from "./powerable.js";
+import { EventListener } from "../events/eventListener.js";
+import { EventType } from "../utils/enums.js";
 
-export class Paddle implements Powerable {
+export class Paddle implements EventListener {
   width = 85;
   height = 27;
   x: number;
@@ -23,6 +24,13 @@ export class Paddle implements Powerable {
       keydown: this.keyDownHandler.bind(this),
       keyup: this.keyUpHandler.bind(this),
     });
+  }
+
+  onEvent(event: EventType): void {
+    if (event === EventType.GIANT_PADDLE_ACTIVATED) {
+      this.giant = true;
+      setTimeout(() => (this.giant = false), 20000);
+    }
   }
 
   public draw(): void {

@@ -1,7 +1,8 @@
+import { EventListener } from "../events/eventListener.js";
+import { EventType } from "../utils/enums.js";
 import { Paddle } from "./paddle.js";
-import { Powerable } from "./powerable.js";
 
-export class Ball implements Powerable {
+export class Ball implements EventListener {
   private static readonly DEAD = true;
   fire = false;
   radius = 5;
@@ -20,6 +21,12 @@ export class Ball implements Powerable {
     this.ctx = ctx;
     this.x = x ?? this.ctx.canvas.width / 2;
     this.y = y ?? this.ctx.canvas.height - 80;
+  }
+
+  onEvent(event: EventType): void {
+    if (event === EventType.FIREBALL) {
+      this.fire = true;
+    }
   }
 
   public draw(): void {

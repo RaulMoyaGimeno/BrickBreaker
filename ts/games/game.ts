@@ -1,16 +1,17 @@
+import { EventEmitter } from "../events/eventEmitter.js";
 import { GameOverModal } from "../modals/gameOverModal.js";
 import { WinModal } from "../modals/winModal.js";
 import { Ball } from "../models/ball.js";
 import { Brick } from "../models/brick.js";
 import { Paddle } from "../models/paddle.js";
-import { Powerable } from "../models/powerable.js";
 import { Power } from "../powers/power.js";
 import { PowerFactory } from "../powers/powerFactory.js";
 import { Counter } from "../timers/counter.js";
-import { BrickStatus, GameStatus } from "../utils/enums.js";
+import { BrickStatus, EventType, GameStatus } from "../utils/enums.js";
 import { GameConfig } from "../utils/types.js";
+import { EventListener } from "../events/eventListener.js";
 
-export class Game implements Powerable {
+export class Game implements EventListener {
   animationId: number = 0;
   over = false;
   shield = false;
@@ -21,7 +22,7 @@ export class Game implements Powerable {
   ctx: CanvasRenderingContext2D;
   balls: Ball[] = [];
   paddle: Paddle;
-  powers: Power<Powerable>[] = [];
+  powers: Power[] = [];
 
   private brickRowCount = 4;
   private readonly brickColumnCount = 9;
@@ -30,6 +31,7 @@ export class Game implements Powerable {
   private readonly brickPadding = 2;
   private readonly brickOffsetTop = 50;
   private readonly brickOffsetLeft = 25;
+  private emitter: EventEmitter;
 
   private bricks: Brick[][] = [];
 
@@ -44,10 +46,31 @@ export class Game implements Powerable {
     this.ctx = <CanvasRenderingContext2D>this.canvas.getContext("2d");
     this.paddle = new Paddle(this.ctx);
 
-    this.addBall();
     this.configGame();
     this.createBricks();
     this.counter = new Counter(1000, config);
+
+    this.emitter = new EventEmitter();
+    this.emitter.subscribe(this);
+    this.addBall();
+    this.emitter.subscribe(this.paddle);
+  }
+
+  onEvent(event: EventType): void {
+    console.log(event);
+    switch (event) {
+      case EventType.PLUS_BALL:
+        this.addBall(this.paddle.x + this.paddle.width / 2, this.paddle.y);
+        break;
+      case EventType.SHIELD:
+        this.shield = true;
+        setTimeout(() => (this.shield = false), 20000);
+        break;
+    }
+  }
+
+  emit(event: EventType): void {
+    this.emitter.emitEvent(event);
   }
 
   configGame(): void {
@@ -79,7 +102,6 @@ export class Game implements Powerable {
       () => this.deletePower(this.powers.indexOf(power)),
       this,
     );
-
     this.powers.push(power);
   }
 
@@ -119,6 +141,7 @@ export class Game implements Powerable {
           this.add = true;
           this.shield = false;
         }
+        this.emitter.unsubscribe(ball);
         return false;
       } else {
         ball.draw();
@@ -168,7 +191,9 @@ export class Game implements Powerable {
   }
 
   addBall(x?: number, y?: number): void {
-    this.balls.push(new Ball(this.ctx, this.paddle, x, y));
+    const newBall = new Ball(this.ctx, this.paddle, x, y);
+    this.balls.push(newBall);
+    this.emitter.subscribe(newBall);
   }
 
   async gameOver(status: GameStatus): Promise<void> {

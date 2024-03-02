@@ -1,5 +1,4 @@
 import { Game } from "../games/game.js";
-import { Powerable } from "../models/powerable.js";
 import { FireBall } from "./fireBall.js";
 import { GiantPaddle } from "./giantPaddle.js";
 import { PlusBall } from "./plusBall.js";
@@ -12,34 +11,20 @@ export class PowerFactory {
     y: number,
     destroy: () => void,
     game: Game,
-  ): Power<Powerable> {
+  ): Power {
     const selectPower = Math.floor(Math.random() * 4);
 
     switch (selectPower) {
       case 0:
-        return new FireBall(x, y, game.ctx, game.paddle, destroy, game.balls);
+        return new FireBall(x, y, game, destroy);
       case 1:
-        return new PlusBall(x, y, game.ctx, game.paddle, destroy, game);
+        return new PlusBall(x, y, game, destroy);
       case 2:
-        return new GiantPaddle(
-          x,
-          y,
-          game.ctx,
-          game.paddle,
-          destroy,
-          game.paddle,
-        );
+        return new GiantPaddle(x, y, game, destroy);
       case 3:
-        return new Shield(x, y, game.ctx, game.paddle, destroy, game);
+        return new Shield(x, y, game, destroy);
       default:
-        return new GiantPaddle(
-          x,
-          y,
-          game.ctx,
-          game.paddle,
-          destroy,
-          game.paddle,
-        );
+        return new GiantPaddle(x, y, game, destroy);
     }
   }
 }

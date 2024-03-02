@@ -1,9 +1,8 @@
-import { Paddle } from "../models/paddle.js";
+import { EventType } from "../utils/enums.js";
 import { Power } from "./power.js";
 
-export class GiantPaddle extends Power<Paddle> {
-  effect(paddle: Paddle): void {
-    paddle.giant = true;
-    setTimeout(() => (paddle.giant = false), 10001);
+export class GiantPaddle extends Power {
+  effect(): EventType {
+    return EventType.GIANT_PADDLE_ACTIVATED;
   }
 }
