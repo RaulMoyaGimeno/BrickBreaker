@@ -14,13 +14,12 @@ import { CollisionManager } from "./colissionManager.js";
 
 export class Game implements EventListener {
   animationId: number = 0;
-  over = false;
-  shield = false;
+  private shield = false;
   private puntuation = 0;
   private add = false;
   private counter: Counter;
   protected canvas: HTMLCanvasElement;
-  ctx: CanvasRenderingContext2D;
+  private ctx: CanvasRenderingContext2D;
 
   private collisionManager: CollisionManager;
   private balls: Ball[] = [];
@@ -94,7 +93,6 @@ export class Game implements EventListener {
       y,
       () => this.deletePower(this.powers.indexOf(power)),
       this.ctx,
-      this.paddle,
     );
     this.powers.push(power);
   }
@@ -105,7 +103,7 @@ export class Game implements EventListener {
     }
   }
 
-  render(): void {
+  render(): boolean {
     this.clearCanvas();
     this.drawShield();
     this.moveAndDrawBalls();
@@ -114,7 +112,7 @@ export class Game implements EventListener {
     this.drawPowers();
     this.checkCollisions();
     this.updateScore();
-    this.checkGameStatus();
+    return this.checkGameStatus();
   }
 
   clearCanvas(): void {
@@ -185,7 +183,7 @@ export class Game implements EventListener {
     $("#score").text(this.puntuation);
   }
 
-  checkGameStatus(): void {
+  checkGameStatus(): boolean {
     if (
       this.puntuation ==
       this.config.brickConfig.brickRowCount *
@@ -193,11 +191,14 @@ export class Game implements EventListener {
         this.config.brickConfig.pointsPerBroken
     ) {
       this.gameOver(GameStatus.WIN);
+      return true;
     }
 
     if (this.balls.length === 0) {
       this.gameOver(GameStatus.LOSE);
+      return true;
     }
+    return false;
   }
 
   addBall(x?: number, y?: number): void {
@@ -206,9 +207,8 @@ export class Game implements EventListener {
   }
 
   async gameOver(status: GameStatus): Promise<void> {
-    this.over = true;
-    cancelAnimationFrame(this.animationId);
     this.counter.stopCounter();
+    cancelAnimationFrame(this.animationId);
     if (status == GameStatus.WIN) {
       const action = await new WinModal().show(this.finalScore());
       action.act();
@@ -221,5 +221,9 @@ export class Game implements EventListener {
   finalScore(): number {
     let score = (this.puntuation * 300) / parseInt($("#counter")[0].innerText);
     return Math.round(score * this.config.scoreMultiplier);
+  }
+
+  setAnimationId(id: number) {
+    this.animationId = id;
   }
 }

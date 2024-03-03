@@ -11,7 +11,6 @@ export abstract class Power extends GameObject {
     private x: number,
     private y: number,
     private ctx: CanvasRenderingContext2D,
-    private paddle: Paddle,
     private destroy: () => void,
   ) {
     super();
@@ -33,8 +32,7 @@ export abstract class Power extends GameObject {
 
   handleCollision(other: GameObject): void {
     if (other instanceof Paddle) {
-      const event = this.effect();
-      EventEmitter.getInstance().emitEvent(event);
+      EventEmitter.getInstance().emitEvent(this.effect());
       this.destroy();
     }
   }

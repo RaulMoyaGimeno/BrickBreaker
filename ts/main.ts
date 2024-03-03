@@ -11,10 +11,10 @@ export class App {
   }
 
   private gameLoop(): void {
-    if (this.game.over) return;
     const animationId = requestAnimationFrame(this.gameLoop.bind(this));
-    this.game.render();
-    this.game.animationId = animationId;
+    this.game.setAnimationId(animationId);
+    const over = this.game.render();
+    if (over) return;
   }
 }
 
