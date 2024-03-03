@@ -1,5 +1,5 @@
 import { EventType } from "../utils/enums";
 
 export interface EventListener {
-  onEvent(event: EventType): void;
+  onEvent(event: EventType, args: any[]): void;
 }

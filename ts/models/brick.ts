@@ -1,5 +1,5 @@
-import { Game } from "../games/game.js";
-import { BrickStatus } from "../utils/enums.js";
+import { EventEmitter } from "../events/eventEmitter.js";
+import { BrickStatus, EventType } from "../utils/enums.js";
 import { BrickConfig } from "../utils/types.js";
 import { Ball } from "./ball.js";
 
@@ -14,7 +14,6 @@ export class Brick {
     column: number,
     row: number,
     private config: BrickConfig,
-    private game: Game,
   ) {
     this.status = BrickStatus.ALIVE;
     this.type = Math.floor(Math.random() * 5);
@@ -76,7 +75,11 @@ export class Brick {
 
       if (this.status === BrickStatus.BROKEN) {
         if (Math.floor(Math.random() * 7) === 6)
-          this.game.addPower(this.x + width / 2, this.y + height / 2);
+          EventEmitter.getInstance().emitEvent(
+            EventType.BRICK_BROKEN,
+            this.x + width / 2,
+            this.y + height / 2,
+          );
       }
 
       return points + (this.status === BrickStatus.BROKEN ? 2 : 1);

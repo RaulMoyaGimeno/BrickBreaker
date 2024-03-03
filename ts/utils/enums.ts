@@ -21,4 +21,5 @@ export enum EventType {
   PLUS_BALL,
   FIREBALL,
   SHIELD,
+  BRICK_BROKEN,
 }

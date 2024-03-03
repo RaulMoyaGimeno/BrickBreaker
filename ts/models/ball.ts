@@ -1,3 +1,4 @@
+import { EventEmitter } from "../events/eventEmitter.js";
 import { EventListener } from "../events/eventListener.js";
 import { EventType } from "../utils/enums.js";
 import { BallConfig } from "../utils/types.js";
@@ -20,6 +21,7 @@ export class Ball implements EventListener {
     x?: number,
     y?: number,
   ) {
+    EventEmitter.getInstance().subscribe(this);
     this.ctx = ctx;
     this.radius = config.radius;
     this.dx = config.dx;

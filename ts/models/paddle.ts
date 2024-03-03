@@ -1,3 +1,4 @@
+import { EventEmitter } from "../events/eventEmitter.js";
 import { EventListener } from "../events/eventListener.js";
 import { EventType } from "../utils/enums.js";
 import { PaddleConfig } from "../utils/types.js";
@@ -17,6 +18,8 @@ export class Paddle implements EventListener {
   static SPEED = 4;
 
   constructor(ctx: CanvasRenderingContext2D, config: PaddleConfig) {
+    EventEmitter.getInstance().subscribe(this);
+
     this.width = config.width;
     this.height = config.height;
     this.ctx = ctx;

@@ -24,8 +24,6 @@ export class Game implements EventListener {
   paddle: Paddle;
   powers: Power[] = [];
 
-  private emitter: EventEmitter;
-
   private bricks: Brick[][] = [];
 
   constructor(
@@ -43,14 +41,12 @@ export class Game implements EventListener {
     this.createBricks();
     this.counter = new Counter(1000, config);
 
-    this.emitter = new EventEmitter();
-    this.emitter.subscribe(this);
+    EventEmitter.getInstance().subscribe(this);
     this.addBall();
-    this.emitter.subscribe(this.paddle);
   }
 
-  onEvent(event: EventType): void {
-    console.log(event);
+  onEvent(event: EventType, args: any[]): void {
+    console.log(args[0]);
     switch (event) {
       case EventType.PLUS_BALL:
         this.addBall(this.paddle.x + this.paddle.width / 2, this.paddle.y);
@@ -59,11 +55,9 @@ export class Game implements EventListener {
         this.shield = true;
         setTimeout(() => (this.shield = false), 20000);
         break;
+      case EventType.BRICK_BROKEN:
+        this.addPower(args[0], args[1]);
     }
-  }
-
-  emit(event: EventType): void {
-    this.emitter.emitEvent(event);
   }
 
   configGame(): void {
@@ -84,7 +78,6 @@ export class Game implements EventListener {
           column,
           row,
           this.config.brickConfig,
-          this,
         );
       }
     }
@@ -95,7 +88,8 @@ export class Game implements EventListener {
       x,
       y,
       () => this.deletePower(this.powers.indexOf(power)),
-      this,
+      this.ctx,
+      this.paddle,
     );
     this.powers.push(power);
   }
@@ -136,7 +130,7 @@ export class Game implements EventListener {
           this.add = true;
           this.shield = false;
         }
-        this.emitter.unsubscribe(ball);
+        EventEmitter.getInstance().unsubscribe(ball);
         return false;
       } else {
         ball.draw();
@@ -203,7 +197,6 @@ export class Game implements EventListener {
       y,
     );
     this.balls.push(newBall);
-    this.emitter.subscribe(newBall);
   }
 
   async gameOver(status: GameStatus): Promise<void> {
