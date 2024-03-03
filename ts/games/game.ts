@@ -10,20 +10,22 @@ import { Counter } from "../timers/counter.js";
 import { BrickStatus, EventType, GameStatus } from "../utils/enums.js";
 import { GameConfig } from "../utils/types.js";
 import { EventListener } from "../events/eventListener.js";
+import { CollisionManager } from "./colissionManager.js";
 
 export class Game implements EventListener {
   animationId: number = 0;
   over = false;
   shield = false;
-  puntuation = 0;
+  private puntuation = 0;
   private add = false;
   private counter: Counter;
   protected canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  balls: Ball[] = [];
-  paddle: Paddle;
-  powers: Power[] = [];
 
+  private collisionManager: CollisionManager;
+  private balls: Ball[] = [];
+  private paddle: Paddle;
+  private powers: Power[] = [];
   private bricks: Brick[][] = [];
 
   constructor(
@@ -36,6 +38,7 @@ export class Game implements EventListener {
     this.canvas.height = height;
     this.ctx = <CanvasRenderingContext2D>this.canvas.getContext("2d");
     this.paddle = new Paddle(this.ctx, config.paddleConfig);
+    this.collisionManager = new CollisionManager();
 
     this.configGame();
     this.createBricks();
@@ -56,7 +59,9 @@ export class Game implements EventListener {
         setTimeout(() => (this.shield = false), 20000);
         break;
       case EventType.BRICK_BROKEN:
-        this.addPower(args[0], args[1]);
+        this.puntuation += this.config.brickConfig.pointsPerBroken;
+        if (Math.floor(Math.random() * 7) === 6)
+          this.addPower(args[0], args[1]);
     }
   }
 
@@ -107,6 +112,7 @@ export class Game implements EventListener {
     this.moveAndDrawPaddle();
     this.checkAndDrawBricks();
     this.drawPowers();
+    this.checkCollisions();
     this.updateScore();
     this.checkGameStatus();
   }
@@ -157,9 +163,6 @@ export class Game implements EventListener {
         if (brick.status === BrickStatus.BROKEN) {
           continue;
         }
-        this.balls.forEach(
-          (ball) => (this.puntuation += brick.checkCollision(ball)),
-        );
         brick.draw();
       }
     }
@@ -167,6 +170,15 @@ export class Game implements EventListener {
 
   drawPowers(): void {
     this.powers.forEach((power) => power.draw());
+  }
+
+  checkCollisions() {
+    this.collisionManager.checkCollisions([
+      ...this.bricks.flatMap((row) => row),
+      ...this.balls,
+      ...this.powers,
+      this.paddle,
+    ]);
   }
 
   updateScore(): void {
@@ -178,7 +190,7 @@ export class Game implements EventListener {
       this.puntuation ==
       this.config.brickConfig.brickRowCount *
         this.config.brickConfig.brickColumnCount *
-        3
+        this.config.brickConfig.pointsPerBroken
     ) {
       this.gameOver(GameStatus.WIN);
     }
@@ -189,13 +201,7 @@ export class Game implements EventListener {
   }
 
   addBall(x?: number, y?: number): void {
-    const newBall = new Ball(
-      this.ctx,
-      this.paddle,
-      this.config.ballConfig,
-      x,
-      y,
-    );
+    const newBall = new Ball(this.ctx, this.config.ballConfig, x, y);
     this.balls.push(newBall);
   }
 

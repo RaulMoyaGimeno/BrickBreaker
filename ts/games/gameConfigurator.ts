@@ -56,6 +56,7 @@ export class GameConfigurator {
     let brickPadding = 2;
     let brickOffsetTop = 50;
     let brickOffsetLeft = 25;
+    let pointsPerBroken = 3;
 
     switch (difficulty) {
       case GameDifficulty.HARD:
@@ -72,6 +73,7 @@ export class GameConfigurator {
       brickPadding,
       brickOffsetTop,
       brickOffsetLeft,
+      pointsPerBroken,
     };
   }
 

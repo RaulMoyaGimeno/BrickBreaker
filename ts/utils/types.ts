@@ -33,4 +33,5 @@ export type BrickConfig = {
   brickPadding: number;
   brickOffsetTop: number;
   brickOffsetLeft: number;
+  pointsPerBroken: number;
 };

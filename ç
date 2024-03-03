@@ -48,6 +48,7 @@ export class Ball extends GameObject implements EventListener {
 
   handleCollision(other: GameObject): void {
     if (other instanceof Paddle) {
+      console.log("paddle");
       const paddle = other as Paddle;
       let width = paddle.width;
       if (paddle.giant) {
@@ -59,7 +60,6 @@ export class Ball extends GameObject implements EventListener {
       let ang: number;
 
       if (ballX > middle - 10 && ballX < middle + 10) {
-        this.calcularY();
         return;
       } else if (rightSide) {
         if (this.dx > 0) {
