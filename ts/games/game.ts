@@ -24,13 +24,6 @@ export class Game implements EventListener {
   paddle: Paddle;
   powers: Power[] = [];
 
-  private brickRowCount = 4;
-  private readonly brickColumnCount = 9;
-  private readonly brickWidth = 58;
-  private readonly brickHeight = 28;
-  private readonly brickPadding = 2;
-  private readonly brickOffsetTop = 50;
-  private readonly brickOffsetLeft = 25;
   private emitter: EventEmitter;
 
   private bricks: Brick[][] = [];
@@ -38,13 +31,13 @@ export class Game implements EventListener {
   constructor(
     height: number,
     width: number,
-    private config: GameConfig,
+    public config: GameConfig,
   ) {
     this.canvas = $("#canvas")[0] as HTMLCanvasElement;
     this.canvas.width = width;
     this.canvas.height = height;
     this.ctx = <CanvasRenderingContext2D>this.canvas.getContext("2d");
-    this.paddle = new Paddle(this.ctx);
+    this.paddle = new Paddle(this.ctx, config.paddleConfig);
 
     this.configGame();
     this.createBricks();
@@ -74,21 +67,23 @@ export class Game implements EventListener {
   }
 
   configGame(): void {
-    Paddle.SPEED = this.config.paddleSpeed;
-    Ball.VELOCIDAD = this.config.ballSpeed;
-    this.brickRowCount = this.config.brickRowCount;
+    Paddle.SPEED = this.config.paddleConfig.speed;
+    Ball.VELOCIDAD = this.config.ballConfig.speed;
   }
 
   createBricks() {
-    for (let column = 0; column < this.brickColumnCount; column++) {
+    for (
+      let column = 0;
+      column < this.config.brickConfig.brickColumnCount;
+      column++
+    ) {
       this.bricks[column] = [];
-      for (let row = 0; row < this.brickRowCount; row++) {
+      for (let row = 0; row < this.config.brickConfig.brickRowCount; row++) {
         this.bricks[column][row] = new Brick(
           this.ctx,
-          column * (this.brickWidth + this.brickPadding) + this.brickOffsetLeft,
-          row * (this.brickHeight + this.brickPadding) + this.brickOffsetTop,
-          this.brickWidth,
-          this.brickHeight,
+          column,
+          row,
+          this.config.brickConfig,
           this,
         );
       }
@@ -158,8 +153,12 @@ export class Game implements EventListener {
   }
 
   checkAndDrawBricks(): void {
-    for (let column = 0; column < this.brickColumnCount; column++) {
-      for (let row = 0; row < this.brickRowCount; row++) {
+    for (
+      let column = 0;
+      column < this.config.brickConfig.brickColumnCount;
+      column++
+    ) {
+      for (let row = 0; row < this.config.brickConfig.brickRowCount; row++) {
         const brick = this.bricks[column][row];
         if (brick.status === BrickStatus.BROKEN) {
           continue;
@@ -181,7 +180,12 @@ export class Game implements EventListener {
   }
 
   checkGameStatus(): void {
-    if (this.puntuation == this.brickRowCount * this.brickColumnCount * 3) {
+    if (
+      this.puntuation ==
+      this.config.brickConfig.brickRowCount *
+        this.config.brickConfig.brickColumnCount *
+        3
+    ) {
       this.gameOver(GameStatus.WIN);
     }
 
@@ -191,7 +195,13 @@ export class Game implements EventListener {
   }
 
   addBall(x?: number, y?: number): void {
-    const newBall = new Ball(this.ctx, this.paddle, x, y);
+    const newBall = new Ball(
+      this.ctx,
+      this.paddle,
+      this.config.ballConfig,
+      x,
+      y,
+    );
     this.balls.push(newBall);
     this.emitter.subscribe(newBall);
   }

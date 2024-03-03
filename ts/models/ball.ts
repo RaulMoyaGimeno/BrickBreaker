@@ -1,24 +1,29 @@
 import { EventListener } from "../events/eventListener.js";
 import { EventType } from "../utils/enums.js";
+import { BallConfig } from "../utils/types.js";
 import { Paddle } from "./paddle.js";
 
 export class Ball implements EventListener {
   private static readonly DEAD = true;
   fire = false;
-  radius = 5;
+  radius: number;
   x: number;
   y: number;
   static VELOCIDAD = 5;
-  dx = 3;
-  dy = -4;
+  dx: number;
+  dy: number;
 
   constructor(
     private ctx: CanvasRenderingContext2D,
     private paddle: Paddle,
+    config: BallConfig,
     x?: number,
     y?: number,
   ) {
     this.ctx = ctx;
+    this.radius = config.radius;
+    this.dx = config.dx;
+    this.dy = config.dy;
     this.x = x ?? this.ctx.canvas.width / 2;
     this.y = y ?? this.ctx.canvas.height - 80;
   }

@@ -1,9 +1,10 @@
 import { EventListener } from "../events/eventListener.js";
 import { EventType } from "../utils/enums.js";
+import { PaddleConfig } from "../utils/types.js";
 
 export class Paddle implements EventListener {
-  width = 85;
-  height = 27;
+  width: number;
+  height: number;
   x: number;
   y: number;
   giant = false;
@@ -15,7 +16,9 @@ export class Paddle implements EventListener {
 
   static SPEED = 4;
 
-  constructor(ctx: CanvasRenderingContext2D) {
+  constructor(ctx: CanvasRenderingContext2D, config: PaddleConfig) {
+    this.width = config.width;
+    this.height = config.height;
     this.ctx = ctx;
     this.x = (this.ctx.canvas.width - this.width) / 2;
     this.y = this.ctx.canvas.height - this.height - 30;

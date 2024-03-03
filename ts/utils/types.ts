@@ -5,9 +5,32 @@ export type Score = {
 };
 
 export type GameConfig = {
-  ballSpeed: number;
-  paddleSpeed: number;
   increaseBallSpeedTimeout: number;
-  brickRowCount: number;
   scoreMultiplier: number;
+  paddleConfig: PaddleConfig;
+  ballConfig: BallConfig;
+  brickConfig: BrickConfig;
+};
+
+export type PaddleConfig = {
+  width: number;
+  height: number;
+  speed: number;
+};
+
+export type BallConfig = {
+  radius: number;
+  speed: number;
+  dx: number;
+  dy: number;
+};
+
+export type BrickConfig = {
+  brickRowCount: number;
+  brickColumnCount: number;
+  brickWidth: number;
+  brickHeight: number;
+  brickPadding: number;
+  brickOffsetTop: number;
+  brickOffsetLeft: number;
 };
