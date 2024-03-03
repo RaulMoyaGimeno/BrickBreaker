@@ -1,4 +1,4 @@
-import { EventType } from "../utils/enums";
+import { EventType } from "../enums";
 import { EventListener } from "./eventListener";
 
 export class EventEmitter {

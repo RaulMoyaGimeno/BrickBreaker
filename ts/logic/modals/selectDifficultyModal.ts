@@ -1,12 +1,12 @@
-import { GameDifficulty } from "../utils/enums.js";
-import { Modal } from "./modal.js";
+import { GameDifficulty } from "../../utils/enums.js";
+import { Modal } from "../../utils/modal.js";
 
 export class SelectDifficultyModal implements Modal<GameDifficulty> {
   async show(): Promise<GameDifficulty> {
     return new Promise((resolve) => {
       const alertDiv = $("<div>");
       const difficultyMessage = $("<label>").text(
-        "Seleccione la dificultad del juego\n",
+        "Seleccione la dificultad del juego\n"
       );
       const botonera = $("<div>");
       const btnEasy = $("<button>").text("Modo fácil");

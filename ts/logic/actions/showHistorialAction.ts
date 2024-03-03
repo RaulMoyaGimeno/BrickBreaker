@@ -1,5 +1,5 @@
 import { HighScoresModal } from "../modals/highScoresModal.js";
-import { Action } from "./actions.js";
+import { Action } from "../../utils/actions.js";
 
 export class ShowHistorialAction implements Action {
   async act(): Promise<void> {

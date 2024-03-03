@@ -1,5 +1,5 @@
-import { StartGameAction } from "./actions/startGameAction.js";
-import { Game } from "./games/game.js";
+import { StartGameAction } from "./logic/actions/startGameAction.js";
+import { Game } from "./models/game.js";
 
 export class App {
   constructor(private game: Game) {

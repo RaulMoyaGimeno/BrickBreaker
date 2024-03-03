@@ -1,15 +1,15 @@
-import { EventEmitter } from "../events/eventEmitter.js";
-import { EventListener } from "../events/eventListener.js";
+import { EventEmitter } from "../utils/events/eventEmitter.js";
+import { EventListener } from "../utils/events/eventListener.js";
 import { EventType } from "../utils/enums.js";
 import { PaddleConfig } from "../utils/types.js";
-import { GameObject } from "./gameObject.js";
+import { GameObject } from "../utils/gameObject.js";
 
 export class Paddle extends GameObject implements EventListener {
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-  giant = false;
+  private width: number;
+  private height: number;
+  private x: number;
+  private y: number;
+  private giant = false;
 
   private leftPressed = false;
   private rightPressed = false;
@@ -58,7 +58,7 @@ export class Paddle extends GameObject implements EventListener {
         this.x,
         this.y,
         this.width * 1.4,
-        this.height,
+        this.height
       );
     } else
       this.ctx.drawImage(
@@ -70,7 +70,7 @@ export class Paddle extends GameObject implements EventListener {
         this.x,
         this.y,
         this.width,
-        this.height,
+        this.height
       );
   }
 
@@ -97,5 +97,25 @@ export class Paddle extends GameObject implements EventListener {
     } else if (e.key == "ArrowRight" || e.key == "Right") {
       this.rightPressed = false;
     }
+  }
+
+  getWidth(): number {
+    return this.width;
+  }
+
+  getHeight(): number {
+    return this.height;
+  }
+
+  getX(): number {
+    return this.x;
+  }
+
+  getY(): number {
+    return this.y;
+  }
+
+  isGiant(): boolean {
+    return this.giant;
   }
 }

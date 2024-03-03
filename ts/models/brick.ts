@@ -1,8 +1,8 @@
-import { EventEmitter } from "../events/eventEmitter.js";
+import { EventEmitter } from "../utils/events/eventEmitter.js";
 import { BrickStatus, EventType } from "../utils/enums.js";
 import { BrickConfig } from "../utils/types.js";
 import { Ball } from "./ball.js";
-import { GameObject } from "./gameObject.js";
+import { GameObject } from "../utils/gameObject.js";
 
 export class Brick extends GameObject {
   public status: BrickStatus;
@@ -14,7 +14,7 @@ export class Brick extends GameObject {
     private ctx: CanvasRenderingContext2D,
     column: number,
     row: number,
-    private config: BrickConfig,
+    private config: BrickConfig
   ) {
     super();
     this.status = BrickStatus.ALIVE;
@@ -34,11 +34,14 @@ export class Brick extends GameObject {
       console.log(ball);
       const width = this.config.brickWidth;
       const height = this.config.brickHeight;
+      const radius = ball.getRadius();
+      const x = ball.getX();
+      const y = ball.getY();
       return (
-        ball.x + ball.radius >= this.x &&
-        ball.x - ball.radius <= this.x + width &&
-        ball.y + ball.radius >= this.y &&
-        ball.y - ball.radius <= this.y + height
+        x + radius >= this.x &&
+        x - radius <= this.x + width &&
+        y + radius >= this.y &&
+        y - radius <= this.y + height
       );
     }
     return false;
@@ -49,6 +52,9 @@ export class Brick extends GameObject {
       const ball = other as Ball;
       const width = this.config.brickWidth;
       const height = this.config.brickHeight;
+      const radius = ball.getRadius();
+      const x = ball.getX();
+      const y = ball.getY();
 
       if (this.status === BrickStatus.ALIVE) {
         this.status = BrickStatus.BREAKING;
@@ -56,15 +62,15 @@ export class Brick extends GameObject {
         this.status = BrickStatus.BROKEN;
       }
 
-      if (ball.fire && this.status === BrickStatus.BREAKING) {
+      if (ball.hasFire() && this.status === BrickStatus.BREAKING) {
         this.status = BrickStatus.BROKEN;
-        ball.fire = false;
+        ball.stopFire();
       }
-      if (ball.y + ball.radius >= this.y && ball.y - ball.radius <= this.y) {
+      if (y + radius >= this.y && y - radius <= this.y) {
         ball.changeDirectionY();
       } else if (
-        ball.y + ball.radius >= this.y + height &&
-        ball.y - ball.radius <= this.y + height
+        y + radius >= this.y + height &&
+        y - radius <= this.y + height
       ) {
         ball.changeDirectionY();
       } else {
@@ -75,7 +81,7 @@ export class Brick extends GameObject {
         EventEmitter.getInstance().emitEvent(
           EventType.BRICK_BROKEN,
           this.x + width / 2,
-          this.y + height / 2,
+          this.y + height / 2
         );
       }
     }
@@ -94,7 +100,7 @@ export class Brick extends GameObject {
       this.x,
       this.y,
       width,
-      height,
+      height
     );
   }
 }

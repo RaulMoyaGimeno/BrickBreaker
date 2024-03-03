@@ -1,17 +1,17 @@
-import { EventEmitter } from "../events/eventEmitter.js";
-import { GameObject } from "../models/gameObject.js";
-import { Paddle } from "../models/paddle.js";
-import { EventType } from "../utils/enums.js";
+import { EventEmitter } from "../../utils/events/eventEmitter.js";
+import { GameObject } from "../../utils/gameObject.js";
+import { Paddle } from "../paddle.js";
+import { EventType } from "../../utils/enums.js";
 
 export abstract class Power extends GameObject {
-  dy = 2;
+  private dy = 2;
   private radius = 3;
 
   constructor(
     private x: number,
     private y: number,
     private ctx: CanvasRenderingContext2D,
-    private destroy: () => void,
+    private destroy: () => void
   ) {
     super();
   }
@@ -19,12 +19,14 @@ export abstract class Power extends GameObject {
   isCollidingWith(other: GameObject): boolean {
     if (other instanceof Paddle) {
       const paddle = other as Paddle;
-      const width = paddle.giant ? paddle.width * 1.4 : paddle.width;
+      const width = paddle.isGiant()
+        ? paddle.getWidth() * 1.4
+        : paddle.getWidth();
       return (
-        this.x > paddle.x &&
-        this.x < paddle.x + width &&
-        this.y + this.dy - paddle.y >= 0 &&
-        this.y + this.dy - paddle.y < this.radius + 4
+        this.x > paddle.getX() &&
+        this.x < paddle.getX() + width &&
+        this.y + this.dy - paddle.getY() >= 0 &&
+        this.y + this.dy - paddle.getY() < this.radius + 4
       );
     }
     return false;

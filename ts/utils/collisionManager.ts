@@ -1,4 +1,4 @@
-import { GameObject } from "../models/gameObject";
+import { GameObject } from "./gameObject";
 
 export class CollisionManager {
   checkCollisions(gameObjects: GameObject[]): void {

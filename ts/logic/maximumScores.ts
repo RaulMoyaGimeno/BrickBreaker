@@ -1,4 +1,4 @@
-import { Score } from "./types.js";
+import { Score } from "../utils/types.js";
 
 export class MaximumScores {
   private static SCORES = "scores";

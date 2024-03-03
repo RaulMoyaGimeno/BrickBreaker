@@ -1,25 +1,25 @@
-import { EventEmitter } from "../events/eventEmitter.js";
-import { EventListener } from "../events/eventListener.js";
+import { EventEmitter } from "../utils/events/eventEmitter.js";
+import { EventListener } from "../utils/events/eventListener.js";
 import { EventType } from "../utils/enums.js";
 import { BallConfig } from "../utils/types.js";
-import { GameObject } from "./gameObject.js";
+import { GameObject } from "../utils/gameObject.js";
 import { Paddle } from "./paddle.js";
 
 export class Ball extends GameObject implements EventListener {
   private static readonly DEAD = true;
-  fire = false;
-  radius: number;
-  x: number;
-  y: number;
-  static VELOCIDAD = 5;
-  dx: number;
-  dy: number;
+  private fire = false;
+  private radius: number;
+  private x: number;
+  private y: number;
+  static SPEED = 5;
+  private dx: number;
+  private dy: number;
 
   constructor(
     private ctx: CanvasRenderingContext2D,
     config: BallConfig,
     x?: number,
-    y?: number,
+    y?: number
   ) {
     super();
     EventEmitter.getInstance().subscribe(this);
@@ -34,13 +34,15 @@ export class Ball extends GameObject implements EventListener {
   isCollidingWith(other: GameObject): boolean {
     if (other instanceof Paddle) {
       const paddle = other as Paddle;
-      const width = paddle.width;
+      const width = paddle.isGiant()
+        ? paddle.getWidth() * 1.4
+        : paddle.getWidth();
 
       return (
-        this.x > paddle.x &&
-        this.x < paddle.x + width &&
-        this.y + 1 + this.dy - paddle.y >= 0 &&
-        this.y + 1 + this.dy - paddle.y < this.radius + 4
+        this.x > paddle.getX() &&
+        this.x < paddle.getX() + width &&
+        this.y + 1 + this.dy - paddle.getY() >= 0 &&
+        this.y + 1 + this.dy - paddle.getY() < this.radius + 4
       );
     }
     return false;
@@ -49,11 +51,10 @@ export class Ball extends GameObject implements EventListener {
   handleCollision(other: GameObject): void {
     if (other instanceof Paddle) {
       const paddle = other as Paddle;
-      let width = paddle.width;
-      if (paddle.giant) {
-        width *= 1.4;
-      }
-      const ballX = paddle.x + width - this.x;
+      const width = paddle.isGiant()
+        ? paddle.getWidth() * 1.4
+        : paddle.getWidth();
+      const ballX = paddle.getX() + width - this.x;
       const middle = width / 2;
       const rightSide = ballX < middle;
       let ang: number;
@@ -126,17 +127,36 @@ export class Ball extends GameObject implements EventListener {
   }
 
   calcularY(): void {
-    this.dy =
-      -1 * Math.sqrt(Math.pow(Ball.VELOCIDAD, 2) - Math.pow(this.dx, 2));
+    this.dy = -1 * Math.sqrt(Math.pow(Ball.SPEED, 2) - Math.pow(this.dx, 2));
   }
 
-  public changeDirectionY(): void {
+  changeDirectionY(): void {
     this.dy = -this.dy;
     this.y += this.dy;
   }
 
-  public changeDirectionX(): void {
+  changeDirectionX(): void {
     this.dx = -this.dx;
     this.x += 2 * this.dx;
+  }
+
+  hasFire(): boolean {
+    return this.fire;
+  }
+
+  stopFire(): void {
+    this.fire = false;
+  }
+
+  getRadius(): number {
+    return this.radius;
+  }
+
+  getX(): number {
+    return this.x;
+  }
+
+  getY(): number {
+    return this.y;
   }
 }

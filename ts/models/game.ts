@@ -1,21 +1,21 @@
-import { EventEmitter } from "../events/eventEmitter.js";
-import { GameOverModal } from "../modals/gameOverModal.js";
-import { WinModal } from "../modals/winModal.js";
-import { Ball } from "../models/ball.js";
-import { Brick } from "../models/brick.js";
-import { Paddle } from "../models/paddle.js";
-import { Power } from "../powers/power.js";
-import { PowerFactory } from "../powers/powerFactory.js";
-import { Counter } from "../timers/counter.js";
+import { EventEmitter } from "../utils/events/eventEmitter.js";
+import { GameOverModal } from "../logic/modals/gameOverModal.js";
+import { WinModal } from "../logic/modals/winModal.js";
+import { Ball } from "./ball.js";
+import { Brick } from "./brick.js";
+import { Paddle } from "./paddle.js";
+import { Power } from "./powers/power.js";
+import { PowerFactory } from "./powers/powerFactory.js";
+import { Counter } from "../utils/timers/counter.js";
 import { BrickStatus, EventType, GameStatus } from "../utils/enums.js";
 import { GameConfig } from "../utils/types.js";
-import { EventListener } from "../events/eventListener.js";
-import { CollisionManager } from "./colissionManager.js";
+import { EventListener } from "../utils/events/eventListener.js";
+import { CollisionManager } from "../utils/collisionManager.js";
 
 export class Game implements EventListener {
-  animationId: number = 0;
+  private animationId: number = 0;
   private shield = false;
-  private puntuation = 0;
+  private score = 0;
   private add = false;
   private counter: Counter;
   protected canvas: HTMLCanvasElement;
@@ -27,11 +27,7 @@ export class Game implements EventListener {
   private powers: Power[] = [];
   private bricks: Brick[][] = [];
 
-  constructor(
-    height: number,
-    width: number,
-    public config: GameConfig,
-  ) {
+  constructor(height: number, width: number, public config: GameConfig) {
     this.canvas = $("#canvas")[0] as HTMLCanvasElement;
     this.canvas.width = width;
     this.canvas.height = height;
@@ -41,7 +37,7 @@ export class Game implements EventListener {
 
     this.configGame();
     this.createBricks();
-    this.counter = new Counter(1000, config);
+    this.counter = new Counter(1000, config.increaseBallSpeedTimeout);
 
     EventEmitter.getInstance().subscribe(this);
     this.addBall();
@@ -51,14 +47,17 @@ export class Game implements EventListener {
     console.log(args[0]);
     switch (event) {
       case EventType.PLUS_BALL:
-        this.addBall(this.paddle.x + this.paddle.width / 2, this.paddle.y);
+        this.addBall(
+          this.paddle.getX() + this.paddle.getWidth() / 2,
+          this.paddle.getY()
+        );
         break;
       case EventType.SHIELD:
         this.shield = true;
         setTimeout(() => (this.shield = false), 20000);
         break;
       case EventType.BRICK_BROKEN:
-        this.puntuation += this.config.brickConfig.pointsPerBroken;
+        this.score += this.config.brickConfig.pointsPerBroken;
         if (Math.floor(Math.random() * 7) === 6)
           this.addPower(args[0], args[1]);
     }
@@ -66,7 +65,7 @@ export class Game implements EventListener {
 
   configGame(): void {
     Paddle.SPEED = this.config.paddleConfig.speed;
-    Ball.VELOCIDAD = this.config.ballConfig.speed;
+    Ball.SPEED = this.config.ballConfig.speed;
   }
 
   createBricks() {
@@ -81,7 +80,7 @@ export class Game implements EventListener {
           this.ctx,
           column,
           row,
-          this.config.brickConfig,
+          this.config.brickConfig
         );
       }
     }
@@ -92,7 +91,7 @@ export class Game implements EventListener {
       x,
       y,
       () => this.deletePower(this.powers.indexOf(power)),
-      this.ctx,
+      this.ctx
     );
     this.powers.push(power);
   }
@@ -180,12 +179,12 @@ export class Game implements EventListener {
   }
 
   updateScore(): void {
-    $("#score").text(this.puntuation);
+    $("#score").text(this.score);
   }
 
   checkGameStatus(): boolean {
     if (
-      this.puntuation ==
+      this.score ==
       this.config.brickConfig.brickRowCount *
         this.config.brickConfig.brickColumnCount *
         this.config.brickConfig.pointsPerBroken
@@ -219,7 +218,7 @@ export class Game implements EventListener {
   }
 
   finalScore(): number {
-    let score = (this.puntuation * 300) / parseInt($("#counter")[0].innerText);
+    let score = (this.score * 300) / parseInt($("#counter")[0].innerText);
     return Math.round(score * this.config.scoreMultiplier);
   }
 

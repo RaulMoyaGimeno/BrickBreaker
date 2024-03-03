@@ -1,15 +1,15 @@
-import { Action } from "../actions/actions.js";
+import { Action } from "../../utils/actions.js";
 import { ShowHistorialAction } from "../actions/showHistorialAction.js";
 import { StartGameAction } from "../actions/startGameAction.js";
-import { MaximumScores } from "../utils/maximumScores.js";
-import { Modal } from "./modal.js";
+import { MaximumScores } from "../maximumScores.js";
+import { Modal } from "../../utils/modal.js";
 
 export class WinModal implements Modal<Action> {
   async show(score: number): Promise<Action> {
     return new Promise((resolve) => {
       const alertDiv = $("<div>");
       const congratulationsMessage = $("<label>").text(
-        `¡Enhorabuena!\n Tu puntuación es: ${score}\n`,
+        `¡Enhorabuena!\n Tu puntuación es: ${score}\n`
       );
       const scoreInput = $("<input>").attr({
         type: "text",
@@ -49,7 +49,7 @@ export class WinModal implements Modal<Action> {
         congratulationsMessage,
         scoreInput,
         scoreButton,
-        botonera,
+        botonera
       );
 
       $("body").append(alertDiv);

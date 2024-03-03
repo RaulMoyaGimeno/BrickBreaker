@@ -1,7 +1,7 @@
-import { Action } from "../actions/actions.js";
+import { Action } from "../../utils/actions.js";
 import { ShowHistorialAction } from "../actions/showHistorialAction.js";
 import { StartGameAction } from "../actions/startGameAction.js";
-import { Modal } from "./modal.js";
+import { Modal } from "../../utils/modal.js";
 
 export class GameOverModal implements Modal<Action> {
   async show(): Promise<Action> {

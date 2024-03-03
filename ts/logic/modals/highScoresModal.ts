@@ -1,7 +1,7 @@
-import { Action } from "../actions/actions.js";
+import { Action } from "../../utils/actions.js";
 import { StartGameAction } from "../actions/startGameAction.js";
-import { MaximumScores } from "../utils/maximumScores.js";
-import { Modal } from "./modal.js";
+import { MaximumScores } from "../maximumScores.js";
+import { Modal } from "../../utils/modal.js";
 
 export class HighScoresModal implements Modal<Action> {
   async show(): Promise<Action> {
@@ -20,7 +20,7 @@ export class HighScoresModal implements Modal<Action> {
         $("<th>").text("Posición"),
         $("<th>").text("Nombre"),
         $("<th>").text("Puntuación"),
-        $("<th>").text("Fecha"),
+        $("<th>").text("Fecha")
       );
       table.append(headerRow);
 
@@ -31,8 +31,8 @@ export class HighScoresModal implements Modal<Action> {
           $("<td>").text(score.name),
           $("<td>").text(score.score),
           $("<td>").text(
-            score?.date?.toString().replace("T", " ").slice(0, 16) ?? "",
-          ),
+            score?.date?.toString().replace("T", " ").slice(0, 16) ?? ""
+          )
         );
         table.append(row);
       }
