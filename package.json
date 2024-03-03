@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc --build tsconfig.json",
+    "prebuild": "rm -rf js"
   },
   "keywords": [],
   "author": "",
@@ -14,10 +15,6 @@
     "@types/jquery": "^3.5.29",
     "@types/node": "^20.11.24",
     "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "@types/sweetalert": "^2.0.4",
-    "sweetalert2": "^9.17.4"
   },
   "type": "module"
 }
